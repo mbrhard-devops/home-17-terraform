@@ -218,12 +218,37 @@ Docker:
 
 
 
-### Задание 5*. Положите пароли от БД в LockBox и настройте интеграцию с Terraform так, чтобы пароль для БД брался из LockBox.
- 
+### Доработка ДЗ
+1. Блокировка state реализовал через S3 backend + DynamoDB.
+2. Правила для security groups генерируются через dynamic блоки.
+```
+# network.tf
+dynamic "ingress" {
+  for_each = var.web_ingress_rules
+  content {
+    protocol       = ingress.value.protocol
+    port           = ingress.value.port
+    v4_cidr_blocks = ingress.value.cidr_blocks
+    description    = ingress.value.description
+  }
+}
 
-Чек-лист готовности итоговой работы:
-инфраструктура в Yandex Cloud описана без хардкода, state хранится удаленно, подключен statelocking
-Docker и Docker Compose установлены через cloud-init
-Dockerfile включает мультисборку и сохранение образа в Container Registry
-приложения доступны по ip-адресу машины (в усложненном варианте - настроить DNS)
-создан MD-файл, который корректно оформлен и содержит примеры, скриншоты, ссылки
+# variables.tf:
+variable "web_ingress_rules" {
+  default = [
+    { port = 22, protocol = "TCP", description = "SSH", cidr_blocks = ["0.0.0.0/0"] },
+    { port = 80, protocol = "TCP", description = "HTTP", cidr_blocks = ["0.0.0.0/0"] },
+    { port = 443, protocol = "TCP", description = "HTTPS", cidr_blocks = ["0.0.0.0/0"] }
+  ]
+}
+```
+
+3. Создан модуль modules/vpc
+```
+modules/vpc/
+├── main.tg
+├── variables.tf
+└── outputs.tf
+```
+
+![Terraform Final Progect. - Final](img/HW-17-Final-Dop-1.png)

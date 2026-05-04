@@ -1,4 +1,3 @@
-# === MANAGED MYSQL CLUSTER ===
 resource "yandex_mdb_mysql_cluster" "app_db" {
   name        = "${var.vm_name}-mysql"
   environment = "PRESTABLE"
@@ -8,22 +7,22 @@ resource "yandex_mdb_mysql_cluster" "app_db" {
 
   resources {
     resource_preset_id = "s2.micro"
-    disk_size          = 10
+    disk_size          = 20
     disk_type_id       = "network-ssd"
   }
 
   user {
-    name     = "app_user"
+    name     = var.db_user
     password = var.db_password
 
     permission {
-      database_name = "app_db"
+      database_name = var.db_name
       roles         = ["ALL"]
     }
   }
 
   database {
-    name = "app_db"
+    name = var.db_name
   }
 
   host {
@@ -31,20 +30,11 @@ resource "yandex_mdb_mysql_cluster" "app_db" {
     zone      = var.zone
     subnet_id = yandex_vpc_subnet.app_subnet.id
   }
+
+  security_group_ids = [yandex_vpc_security_group.db_sg.id]
 }
 
-# === OUTPUTS ===
-output "db_endpoint" {
-  description = "MySQL endpoint"
+output "db_host" {
+  description = "MySQL host FQDN"
   value       = yandex_mdb_mysql_cluster.app_db.host[0].fqdn
-  sensitive   = false
 }
-
-output "db_name" {
-  value = "app_db"
-}
-
-output "db_user" {
-  value = "app_user"
-}
-

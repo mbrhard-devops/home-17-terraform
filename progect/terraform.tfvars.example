@@ -1,0 +1,8 @@
+cloud_id        = "your-cloud-id"
+folder_id       = "your-folder-id"
+token           = "your-token"
+ssh_public_key  = "ssh-ed25519 your-public-key"
+ssh_user        = "ubuntu"
+zone            = "ru-central1-a"
+vm_name         = "final-project"
+db_password     = "your-strong-password"
