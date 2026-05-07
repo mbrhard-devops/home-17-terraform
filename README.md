@@ -252,3 +252,38 @@ modules/vpc/
 ```
 
 ![Terraform Final Progect. - Final](img/HW-17-Final-Dop-1.png)
+
+### Доработка ДЗ - 2
+Блокировка state через S3 bucket.
+Ключи доступа через переменные окружения AWS_ACCESS_KEY_ID и AWS_SECRET_ACCESS_KEY.
+
+** providers.tf **
+```
+terraform {
+  required_version = ">= 1.5"
+
+  backend "s3" {
+    endpoints = {
+      s3 = "https://storage.yandexcloud.net"
+    }
+    bucket = "mbrhard-tf-state-05-1776752950"
+    region = "us-east-1"
+    key    = "final-project/terraform.tfstate"
+
+  }
+
+  required_providers {
+    yandex = {
+      source  = "yandex-cloud/yandex"
+      version = "~> 0.108"
+    }
+  }
+}
+
+provider "yandex" {
+  token     = var.token
+  cloud_id  = var.cloud_id
+  folder_id = var.folder_id
+  zone      = var.zone
+}
+```
